@@ -29,10 +29,11 @@ type BaggageclaimCommand struct {
 
 	VolumesDir flag.Dir `long:"volumes" required:"true" description:"Directory in which to place volume data."`
 
-	Driver string `long:"driver" default:"detect" choice:"detect" choice:"naive" choice:"btrfs" choice:"overlay" description:"Driver to use for managing volumes."`
+	Driver string `long:"driver" default:"detect" choice:"detect" choice:"naive" choice:"btrfs" choice:"overlay" choice:"zfs" description:"Driver to use for managing volumes."`
 
 	BtrfsBin string `long:"btrfs-bin" default:"btrfs" description:"Path to btrfs binary"`
 	MkfsBin  string `long:"mkfs-bin" default:"mkfs.btrfs" description:"Path to mkfs.btrfs binary"`
+	ZfsBin   string `long:"zfs-bin" default:"zfs" description:"Path to zfs binary"`
 
 	OverlaysDir string `long:"overlays-dir" description:"Path to directory in which to store overlay data"`
 

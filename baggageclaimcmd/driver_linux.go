@@ -33,14 +33,21 @@ func (cmd *BaggageclaimCommand) driver(logger lager.Logger) (volume.Driver, erro
 
 	// we don't care about the error here
 	_ = exec.Command("modprobe", "btrfs").Run()
+	_ = exec.Command("modprobe", "zfs").Run()
 
 	supportsBtrfs, err := supportsFilesystem("btrfs")
 	if err != nil {
 		return nil, fmt.Errorf("failed to detect if btrfs is supported: %s", err)
 	}
+	supportsZfs, err := supportsFilesystem("zfs")
+	if err != nil {
+		return nil, fmt.Errorf("failed to detect if zfs is supported: %s", err)
+	}
 
 	if cmd.Driver == "detect" {
-		if supportsBtrfs {
+		if supportsZfs {
+			cmd.Driver = "zfs"
+		} else if supportsBtrfs {
 			cmd.Driver = "btrfs"
 		} else if kernelSupportsOverlay {
 			cmd.Driver = "overlay"
@@ -81,6 +88,8 @@ func (cmd *BaggageclaimCommand) driver(logger lager.Logger) (volume.Driver, erro
 		}
 	case "btrfs":
 		d = driver.NewBtrFSDriver(logger.Session("driver"), cmd.BtrfsBin)
+	case "zfs":
+		d = driver.NewZfsDriver(logger.Session("driver"), cmd.ZfsBin)
 	case "naive":
 		d = &driver.NaiveDriver{}
 	default:
